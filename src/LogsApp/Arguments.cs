@@ -25,7 +25,9 @@ public class Arguments
                 case "--path":
                 case "-p":
                     if (i + 1 >= args.Length || args[i + 1].StartsWith("-"))
+                    {
                         throw new ArgumentsCliException("После --path/-p не указан путь к файлу");
+                    }
 
                     var paths = new List<string>();
                     i++; // Переходим к следующему аргументу

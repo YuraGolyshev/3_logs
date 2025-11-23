@@ -36,12 +36,12 @@ public class LogFileProcessor
                     continue;
                 }
 
-                if (from != null && entry.TimeLocal < from)
+                if (from != null && entry.TimeLocal.Date < from.Value.Date)
                 {
                     continue;
                 }
 
-                if (to != null && entry.TimeLocal > to)
+                if (to != null && entry.TimeLocal.Date > to.Value.Date)
                 {
                     continue;
                 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 
 namespace LogsApp;
@@ -16,7 +17,7 @@ public class StatisticsResult
     public List<string> UniqueProtocols { get; set; } = new();
 }
 
-public class ResponseSizeInBytesStat { public int Average { get; set; } public int Max { get; set; } public int P95 { get; set; } }
+public class ResponseSizeInBytesStat { public double Average { get; set; } public int Max { get; set; } public int P95 { get; set; } }
 public class ResourceStat { public string Resource { get; set; } = ""; public int TotalRequestsCount { get; set; } }
 public class ResponseCodeStat { public int Code { get; set; } public int TotalResponsesCount { get; set; } }
 public class RequestsPerDateStat { public string Date { get; set; } = ""; public string Weekday { get; set; } = ""; public int TotalRequestsCount { get; set; } public double TotalRequestsPercentage { get; set; } }
@@ -28,17 +29,16 @@ public class StatisticsBuilder
         var list = logEntries.ToList();
         var stats = new StatisticsResult
         {
-            Files = new List<string>(files),
+            Files = files.Select(f => Path.GetFileName(f)).ToList(),
             TotalRequestsCount = list.Count
         };
         // Response size (byte) aggregate
         if (list.Count > 0)
         {
             var sizes = list.Select(x => x.BodyBytesSent).OrderBy(x => x).ToList();
-            // Исправлено: округление со смещением от нуля
-            stats.ResponseSizeInBytes.Average = (int)Math.Round(sizes.Average(), 0, MidpointRounding.AwayFromZero);
+            stats.ResponseSizeInBytes.Average = Math.Round(sizes.Average(), 2);
             stats.ResponseSizeInBytes.Max = sizes.Max();
-            int p95Index = (int)Math.Ceiling(sizes.Count * 0.95) - 1;
+            int p95Index = (int)Math.Ceiling((sizes.Count - 1) * 0.95);
             p95Index = Math.Clamp(p95Index, 0, sizes.Count - 1);
             stats.ResponseSizeInBytes.P95 = sizes[p95Index];
         }
