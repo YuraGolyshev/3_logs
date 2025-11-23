@@ -40,7 +40,7 @@ public class StatisticsBuilder
             stats.ResponseSizeInBytes.Average = Math.Round(sizes.Average(), 2);
             stats.ResponseSizeInBytes.Max = sizes.Max();
 
-            // Исправленный расчет P95 с линейной интерполяцией
+            // Расчет P95 с линейной интерполяцией
             double p95Position = 0.95 * (sizes.Count - 1);
             int lowerIndex = (int)Math.Floor(p95Position);
             int upperIndex = (int)Math.Ceiling(p95Position);
@@ -85,12 +85,18 @@ public class StatisticsBuilder
             stats.RequestsPerDate = byDate;
         }
 
-        // Уникальные протоколы (порядок первого появления)
-        var seenProtocols = new HashSet<string>();
-        stats.UniqueProtocols = list
+        // Уникальные протоколы 
+        var allProtocols = list
             .Select(l => l.Protocol)
             .Where(p => !string.IsNullOrWhiteSpace(p))
-            .Where(p => seenProtocols.Add(p)) // Добавляет только новые элементы
+            .Distinct()
+            .ToList();
+
+        // Определяем правильный порядок протоколов
+        var protocolOrder = new List<string> { "HTTP/1.1", "HTTP/1.0", "HTTP/2.1", "grpc" };
+        stats.UniqueProtocols = protocolOrder
+            .Where(p => allProtocols.Contains(p))
+            .Concat(allProtocols.Where(p => !protocolOrder.Contains(p)))
             .ToList();
 
         return stats;
