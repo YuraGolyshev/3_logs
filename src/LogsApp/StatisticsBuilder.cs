@@ -40,27 +40,36 @@ public class StatisticsBuilder
             stats.ResponseSizeInBytes.Average = Math.Round(sizes.Average(), 2);
             stats.ResponseSizeInBytes.Max = sizes.Max();
 
-            // Исправленный расчет P95
+            // Исправленный расчет P95 с линейной интерполяцией
             double p95Position = 0.95 * (sizes.Count - 1);
-            int p95Index = (int)Math.Round(p95Position);
-            p95Index = Math.Clamp(p95Index, 0, sizes.Count - 1);
-            stats.ResponseSizeInBytes.P95 = sizes[p95Index];
+            int lowerIndex = (int)Math.Floor(p95Position);
+            int upperIndex = (int)Math.Ceiling(p95Position);
+            double fraction = p95Position - lowerIndex;
+
+            if (upperIndex >= sizes.Count)
+            {
+                stats.ResponseSizeInBytes.P95 = sizes[lowerIndex];
+            }
+            else
+            {
+                stats.ResponseSizeInBytes.P95 = (int)Math.Round(sizes[lowerIndex] + fraction * (sizes[upperIndex] - sizes[lowerIndex]));
+            }
         }
 
-        // Top 10 ресурсов (остается без изменений)
+        // Top 10 ресурсов
         stats.Resources = list.GroupBy(x => x.Resource)
             .Select(g => new ResourceStat { Resource = g.Key, TotalRequestsCount = g.Count() })
             .OrderByDescending(r => r.TotalRequestsCount)
             .Take(10)
             .ToList();
 
-        // Частота кодов ответа (остается без изменений)
+        // Частота кодов ответа
         stats.ResponseCodes = list.GroupBy(x => x.Status)
             .Select(g => new ResponseCodeStat { Code = g.Key, TotalResponsesCount = g.Count() })
             .OrderByDescending(g => g.TotalResponsesCount)
             .ToList();
 
-        // Распределение по датам (остается без изменений)
+        // Распределение по датам
         if (list.Count > 0)
         {
             var byDate = list.GroupBy(l => l.TimeLocal.Date)
@@ -76,12 +85,12 @@ public class StatisticsBuilder
             stats.RequestsPerDate = byDate;
         }
 
-        // Исправленные уникальные протоколы
+        // Уникальные протоколы (порядок первого появления)
+        var seenProtocols = new HashSet<string>();
         stats.UniqueProtocols = list
             .Select(l => l.Protocol)
             .Where(p => !string.IsNullOrWhiteSpace(p))
-            .Distinct()
-            .OrderBy(p => p) // или используйте OrderByDescending в зависимости от требований
+            .Where(p => seenProtocols.Add(p)) // Добавляет только новые элементы
             .ToList();
 
         return stats;

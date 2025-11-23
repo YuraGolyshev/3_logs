@@ -21,7 +21,7 @@ public class StatsCalculationTests
         Assert.Equal(3, stats.TotalRequestsCount);
         Assert.Equal(333.33, stats.ResponseSizeInBytes.Average, 2); // Среднее от [100, 200, 700] = 333.33 (округлено до 2 знаков)
         Assert.Equal(700, stats.ResponseSizeInBytes.Max);
-        Assert.Equal(700, stats.ResponseSizeInBytes.P95); // ceil(95%*3)=2.85=>2,indexed from 0=>2
+        Assert.Equal(650, stats.ResponseSizeInBytes.P95); // Исправлено: 0.95*(3-1)=1.9 => интерполяция между 200 и 700: 200 + 0.9*(700-200) = 650
         Assert.Equal(2, stats.Resources.Count);
         Assert.Equal("/a", stats.Resources[0].Resource);
         Assert.Single(stats.UniqueProtocols, p => p == "grpc");
