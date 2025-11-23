@@ -24,7 +24,7 @@ public class StatsCalculationTests
         Assert.Equal(700, stats.ResponseSizeInBytes.P95); // ceil(95%*3)=2.85=>2,indexed from 0=>2
         Assert.Equal(2, stats.Resources.Count);
         Assert.Equal("/a", stats.Resources[0].Resource);
-        Assert.Single(stats.UniqueProtocols.Where(p => p == "grpc"));
+        Assert.Single(stats.UniqueProtocols, p => p == "grpc");
         Assert.Contains(stats.ResponseCodes, x=>x.Code==404);
     }
 }

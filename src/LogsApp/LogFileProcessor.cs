@@ -32,9 +32,20 @@ public class LogFileProcessor
                 total++;
                 var entry = LogParser.ParseAndWarn(line);
                 if (entry == null)
+                {
                     continue;
-                if (from != null && entry.TimeLocal < from) continue;
-                if (to != null && entry.TimeLocal > to) continue;
+                }
+
+                if (from != null && entry.TimeLocal < from)
+                {
+                    continue;
+                }
+
+                if (to != null && entry.TimeLocal > to)
+                {
+                    continue;
+                }
+
                 valid++;
                 yield return entry;
             }
