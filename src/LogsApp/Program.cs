@@ -1,7 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Globalization;
-using System.Text.RegularExpressions;
-// TODO: подключение логгера log4net
+﻿using LogsApp;
 
 namespace LogsApp;
 
@@ -14,6 +11,13 @@ class Program
             Arguments cliArgs = Arguments.Parse(args);
             var processor = new LogFileProcessor();
             var logEntries = processor.ReadLogEntries(cliArgs.Paths!, cliArgs.From, cliArgs.To).ToList();
+            
+            if (logEntries.Count == 0)
+            {
+                Console.Error.WriteLine("[ERR] Не удалось обработать ни одной записи лога. Проверьте пути к файлам и формат данных.");
+                return 2;
+            }
+            
             var statsBuilder = new StatisticsBuilder();
             var stats = statsBuilder.Build(logEntries, cliArgs.Paths!);
 
