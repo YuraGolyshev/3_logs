@@ -13,7 +13,7 @@ public class StatsReportTests
         var stat = new StatisticsBuilder().Build(new[]
         {
             new LogEntry{BodyBytesSent=50, Status=200, Resource="/abc", TimeLocal=System.DateTime.UtcNow, Protocol="HTTP/2.0"}
-        }, new(){"file1.log"});
+        }, new() { "file1.log" });
         string outfile = "test_stats.json";
         if (File.Exists(outfile))
         {
@@ -29,7 +29,7 @@ public class StatsReportTests
     [Fact]
     public void MarkdownTest()
     {
-        var stat = new StatisticsBuilder().Build(new[] { new LogEntry{BodyBytesSent=51, Status=200, Resource="/m", TimeLocal=System.DateTime.UtcNow, Protocol="HTTP/1.1" } }, new(){"f.md"});
+        var stat = new StatisticsBuilder().Build(new[] { new LogEntry { BodyBytesSent = 51, Status = 200, Resource = "/m", TimeLocal = System.DateTime.UtcNow, Protocol = "HTTP/1.1" } }, new() { "f.md" });
         string outfile = "test_stats.md";
         if (File.Exists(outfile))
         {
@@ -45,7 +45,7 @@ public class StatsReportTests
     [Fact]
     public void AdocTest()
     {
-        var stat = new StatisticsBuilder().Build(new[] { new LogEntry{BodyBytesSent=52, Status=404, Resource="/ad", TimeLocal=System.DateTime.UtcNow, Protocol="QUIC" } }, new(){"a.ad"});
+        var stat = new StatisticsBuilder().Build(new[] { new LogEntry { BodyBytesSent = 52, Status = 404, Resource = "/ad", TimeLocal = System.DateTime.UtcNow, Protocol = "QUIC" } }, new() { "a.ad" });
         string outfile = "test_stats.ad";
         if (File.Exists(outfile))
         {

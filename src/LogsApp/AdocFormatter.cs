@@ -66,7 +66,7 @@ public class AdocFormatter
 
             sb.AppendLine("|===\n");
         }
-        if(stats.UniqueProtocols.Count > 0)
+        if (stats.UniqueProtocols.Count > 0)
         {
             sb.AppendLine("**Уникальные протоколы**: " + string.Join(", ", stats.UniqueProtocols));
         }

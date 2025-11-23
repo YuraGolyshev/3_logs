@@ -25,6 +25,6 @@ public class StatsCalculationTests
         Assert.Equal(2, stats.Resources.Count);
         Assert.Equal("/a", stats.Resources[0].Resource);
         Assert.Single(stats.UniqueProtocols, p => p == "grpc");
-        Assert.Contains(stats.ResponseCodes, x=>x.Code==404);
+        Assert.Contains(stats.ResponseCodes, x => x.Code == 404);
     }
 }

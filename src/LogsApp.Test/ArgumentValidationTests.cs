@@ -14,7 +14,7 @@ public class ArgumentValidationTests
     [Fact]
     public void ParsesRequiredArgsSuccessfully()
     {
-        var args = new[] {"--path", "a.log", "--format", "json", "--output", "out.json"};
+        var args = new[] { "--path", "a.log", "--format", "json", "--output", "out.json" };
         var parsed = Arguments.Parse(args);
         Assert.Single(parsed.Paths!);
         Assert.Equal("json", parsed.Format);
@@ -24,19 +24,19 @@ public class ArgumentValidationTests
     [Fact]
     public void ThrowsOnMissingPath()
     {
-        var args = new[] {"--output", "report.json", "--format", "json"};
+        var args = new[] { "--output", "report.json", "--format", "json" };
         Assert.Throws<ArgumentsCliException>(() => Arguments.Parse(args));
     }
     [Fact]
     public void ThrowsOnInvalidFormat()
     {
-        var args = new[] {"--path", "a.log", "--output", "r.json", "--format", "bad"};
+        var args = new[] { "--path", "a.log", "--output", "r.json", "--format", "bad" };
         Assert.Throws<ArgumentsCliException>(() => Arguments.Parse(args));
     }
     [Fact]
     public void ThrowsOnFromGreaterThanTo()
     {
-        var args = new[] {"--path", "a.log", "--output", "r.json", "--format", "json", "--from", "2025-01-03", "--to", "2024-12-22"};
+        var args = new[] { "--path", "a.log", "--output", "r.json", "--format", "json", "--from", "2025-01-03", "--to", "2024-12-22" };
         Assert.Throws<ArgumentsCliException>(() => Arguments.Parse(args));
     }
 
@@ -46,7 +46,7 @@ public class ArgumentValidationTests
         var processor = new LogFileProcessor();
         var notExistFile = "this_file_should_not_exist_123456789.log";
         // Ожидаем пустую выдачу, ошибки выводятся в stderr
-        var logs = processor.ReadLogEntries(new[] {notExistFile}, null, null).ToList();
+        var logs = processor.ReadLogEntries(new[] { notExistFile }, null, null).ToList();
         Assert.Empty(logs);
     }
 
@@ -68,7 +68,7 @@ public class ArgumentValidationTests
         // В нашей валидации не исключается, поддержка только .log/.txt идет как защита на уровне чтения файла. Поэтому ОК если просто ничего не выдается.
         // Для реального production можно добавить такую проверку явно.
         var processor = new LogFileProcessor();
-        var logs = processor.ReadLogEntries(new[] {"file" + extension}, null, null).ToList();
+        var logs = processor.ReadLogEntries(new[] { "file" + extension }, null, null).ToList();
         Assert.Empty(logs);
     }
 
@@ -76,7 +76,7 @@ public class ArgumentValidationTests
     [MemberData(nameof(Test4ArgumentsSource))]
     public void Test4_OnInputWithInvalidFromOrToParameters(string from, string to)
     {
-        var args = new[] {"--path", "a.log", "--format", "json", "--output", "o.json", "--from", from, "--to", to };
+        var args = new[] { "--path", "a.log", "--format", "json", "--output", "o.json", "--from", from, "--to", to };
         Assert.Throws<ArgumentsCliException>(() => Arguments.Parse(args));
     }
 
@@ -93,7 +93,7 @@ public class ArgumentValidationTests
     public void Test6_OnOutputArgumentHasIncorrectExtension(string format, string output)
     {
         var stat = new StatisticsBuilder().Build(Enumerable.Empty<LogEntry>(), new() { "a.log" });
-        switch(format)
+        switch (format)
         {
             case "json":
                 Assert.Throws<ArgumentsCliException>(() => new JsonFormatter().Write(stat, output));
@@ -114,11 +114,14 @@ public class ArgumentValidationTests
     {
         var file = "test_output_exists.json";
         File.WriteAllText(file, "stub");
-        try {
+        try
+        {
             var formatter = new JsonFormatter();
-            var stat = new StatisticsBuilder().Build(Enumerable.Empty<LogEntry>(), new(){"test.log"});
+            var stat = new StatisticsBuilder().Build(Enumerable.Empty<LogEntry>(), new() { "test.log" });
             Assert.Throws<ArgumentsCliException>(() => formatter.Write(stat, file));
-        } finally {
+        }
+        finally
+        {
             File.Delete(file);
         }
     }
@@ -151,7 +154,7 @@ public class ArgumentValidationTests
     [InlineData("--filter")]
     public void Test9_OnUnsupportedParameterProvided(string argument)
     {
-        var args = new[] {argument, "foo", "--path", "a.log", "--output", "out.json", "--format", "json"};
+        var args = new[] { argument, "foo", "--path", "a.log", "--output", "out.json", "--format", "json" };
         Assert.Throws<ArgumentsCliException>(() => Arguments.Parse(args));
     }
 

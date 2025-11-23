@@ -56,12 +56,12 @@ public class MarkdownFormatter
             sb.AppendLine("\n#### Распределение по датам\n");
             sb.AppendLine("|    Дата    |   День   | Количество | Проценты |");
             sb.AppendLine("|:----------:|:--------:|-----------:|----------:|");
-            foreach(var d in stats.RequestsPerDate)
+            foreach (var d in stats.RequestsPerDate)
             {
                 sb.AppendLine($"| {d.Date} | {d.Weekday} | {d.TotalRequestsCount} | {d.TotalRequestsPercentage}% |");
             }
         }
-        if(stats.UniqueProtocols.Count > 0)
+        if (stats.UniqueProtocols.Count > 0)
         {
             sb.AppendLine("\n**Уникальные протоколы:** " + string.Join(", ", stats.UniqueProtocols));
         }

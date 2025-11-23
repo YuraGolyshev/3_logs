@@ -11,13 +11,13 @@ class Program
             Arguments cliArgs = Arguments.Parse(args);
             var processor = new LogFileProcessor();
             var logEntries = processor.ReadLogEntries(cliArgs.Paths!, cliArgs.From, cliArgs.To).ToList();
-            
+
             if (logEntries.Count == 0)
             {
                 Console.Error.WriteLine("[ERR] Не удалось обработать ни одной записи лога. Проверьте пути к файлам и формат данных.");
                 return 2;
             }
-            
+
             var statsBuilder = new StatisticsBuilder();
             var stats = statsBuilder.Build(logEntries, cliArgs.Paths!);
 
@@ -38,12 +38,12 @@ class Program
             Console.WriteLine($"[OK] Анализ завершён, результат в файле: {cliArgs.OutputPath}");
             return 0;
         }
-        catch(ArgumentsCliException aex)
+        catch (ArgumentsCliException aex)
         {
             Console.Error.WriteLine($"[ERR] {aex.Message}");
             return 2;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.Error.WriteLine($"[FATAL] {ex.Message}\n{ex.StackTrace}");
             return 1;

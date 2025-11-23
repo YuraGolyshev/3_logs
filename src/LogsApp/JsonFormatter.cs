@@ -24,7 +24,7 @@ public class JsonFormatter
             throw new ArgumentsCliException($"Директория не существует или недоступна для записи: {dir}");
         }
 
-        var opts = new JsonSerializerOptions{ PropertyNamingPolicy = JsonNamingPolicy.CamelCase, WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+        var opts = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
         var json = JsonSerializer.Serialize(stats, opts);
         File.WriteAllText(outputPath, json);
     }

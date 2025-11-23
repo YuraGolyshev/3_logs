@@ -18,22 +18,29 @@ public class Arguments
         }
 
         var cli = new Arguments();
-        for(int i=0;i<args.Length;i++)
+        for (int i = 0; i < args.Length; i++)
         {
-            switch(args[i])
+            switch (args[i])
             {
                 case "--path":
                 case "-p":
-                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
-                    {
+                    if (i + 1 >= args.Length || args[i + 1].StartsWith("-"))
                         throw new ArgumentsCliException("После --path/-p не указан путь к файлу");
-                    }
 
-                    cli.Paths = args[++i].Split(';').ToList();
+                    var paths = new List<string>();
+                    i++; // Переходим к следующему аргументу
+                         // Собираем все пути до следующего флага или конца массива
+                    while (i < args.Length && !args[i].StartsWith("-"))
+                    {
+                        paths.AddRange(args[i].Split(';'));
+                        i++;
+                    }
+                    i--; // Откатываем на один шаг назад, т.к. внешний цикл сделает i++
+                    cli.Paths = paths;
                     break;
                 case "--format":
                 case "-f":
-                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
+                    if (i + 1 >= args.Length || args[i + 1].StartsWith("-"))
                     {
                         throw new ArgumentsCliException("После --format/-f не передан формат (json/markdown/adoc)");
                     }
@@ -47,7 +54,7 @@ public class Arguments
                     break;
                 case "--output":
                 case "-o":
-                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
+                    if (i + 1 >= args.Length || args[i + 1].StartsWith("-"))
                     {
                         throw new ArgumentsCliException("После --output/-o не указан путь выходного файла");
                     }
@@ -55,7 +62,7 @@ public class Arguments
                     cli.OutputPath = args[++i];
                     break;
                 case "--from":
-                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
+                    if (i + 1 >= args.Length || args[i + 1].StartsWith("-"))
                     {
                         throw new ArgumentsCliException("После --from не указана дата");
                     }
@@ -63,7 +70,7 @@ public class Arguments
                     cli.From = ParseIso8601Date(args[++i], "from");
                     break;
                 case "--to":
-                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
+                    if (i + 1 >= args.Length || args[i + 1].StartsWith("-"))
                     {
                         throw new ArgumentsCliException("После --to не указана дата");
                     }
@@ -109,5 +116,5 @@ public class Arguments
 
 public class ArgumentsCliException : Exception
 {
-    public ArgumentsCliException(string msg): base(msg) {}
+    public ArgumentsCliException(string msg) : base(msg) { }
 }

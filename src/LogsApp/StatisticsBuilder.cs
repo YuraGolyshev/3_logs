@@ -57,7 +57,8 @@ public class StatisticsBuilder
         if (list.Count > 0)
         {
             var byDate = list.GroupBy(l => l.TimeLocal.Date)
-                .Select(g => new RequestsPerDateStat {
+                .Select(g => new RequestsPerDateStat
+                {
                     Date = g.Key.ToString("yyyy-MM-dd"),
                     Weekday = CultureInfo.InvariantCulture.DateTimeFormat.GetDayName(g.Key.DayOfWeek),
                     TotalRequestsCount = g.Count(),
