@@ -1,6 +1,6 @@
 namespace LogsApp;
 
-internal class LogEntry
+public class LogEntry
 {
     public string RemoteAddr { get; set; } = "";
     public string RemoteUser { get; set; } = "";

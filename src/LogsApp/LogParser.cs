@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace LogsApp;
 
-internal static class LogParser
+public static class LogParser
 {
     private static readonly Regex pattern = new Regex(
         // Используем raw string и именованные группы для удобства разбора

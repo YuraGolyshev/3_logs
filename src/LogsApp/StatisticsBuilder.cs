@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace LogsApp;
 
-internal class StatisticsResult
+public class StatisticsResult
 {
     public List<string> Files { get; set; } = new();
     public int TotalRequestsCount { get; set; }
@@ -16,12 +16,12 @@ internal class StatisticsResult
     public List<string> UniqueProtocols { get; set; } = new();
 }
 
-internal class ResponseSizeInBytesStat { public int Average { get; set; } public int Max { get; set; } public int P95 { get; set; } }
-internal class ResourceStat { public string Resource { get; set; } = ""; public int TotalRequestsCount { get; set; } }
-internal class ResponseCodeStat { public int Code { get; set; } public int TotalResponsesCount { get; set; } }
-internal class RequestsPerDateStat { public string Date { get; set; } = ""; public string Weekday { get; set; } = ""; public int TotalRequestsCount { get; set; } public double TotalRequestsPercentage { get; set; } }
+public class ResponseSizeInBytesStat { public int Average { get; set; } public int Max { get; set; } public int P95 { get; set; } }
+public class ResourceStat { public string Resource { get; set; } = ""; public int TotalRequestsCount { get; set; } }
+public class ResponseCodeStat { public int Code { get; set; } public int TotalResponsesCount { get; set; } }
+public class RequestsPerDateStat { public string Date { get; set; } = ""; public string Weekday { get; set; } = ""; public int TotalRequestsCount { get; set; } public double TotalRequestsPercentage { get; set; } }
 
-internal class StatisticsBuilder
+public class StatisticsBuilder
 {
     public StatisticsResult Build(IEnumerable<LogEntry> logEntries, List<string> files)
     {
@@ -35,7 +35,8 @@ internal class StatisticsBuilder
         if (list.Count > 0)
         {
             var sizes = list.Select(x => x.BodyBytesSent).OrderBy(x => x).ToList();
-            stats.ResponseSizeInBytes.Average = (int)Math.Round(sizes.Average());
+            // Исправлено: округление со смещением от нуля
+            stats.ResponseSizeInBytes.Average = (int)Math.Round(sizes.Average(), 0, MidpointRounding.AwayFromZero);
             stats.ResponseSizeInBytes.Max = sizes.Max();
             int p95Index = (int)Math.Ceiling(sizes.Count * 0.95) - 1;
             p95Index = Math.Clamp(p95Index, 0, sizes.Count - 1);

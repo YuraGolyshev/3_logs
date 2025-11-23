@@ -4,7 +4,7 @@ using System.IO;
 
 namespace LogsApp;
 
-internal class LogFileProcessor
+public class LogFileProcessor
 {
     /// <summary>
     /// Читает логи из списка файлов, строчно, фильтрует по датам, отдаёт валидные LogEntry.

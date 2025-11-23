@@ -16,8 +16,22 @@ class Program
             var logEntries = processor.ReadLogEntries(cliArgs.Paths!, cliArgs.From, cliArgs.To).ToList();
             var statsBuilder = new StatisticsBuilder();
             var stats = statsBuilder.Build(logEntries, cliArgs.Paths!);
-            // TODO: форматирование и запись результата в stats
-            Console.WriteLine($"Сбор статистики завершён. Всего обработано: {stats.TotalRequestsCount} записей.");
+
+            switch (cliArgs.Format)
+            {
+                case "json":
+                    new JsonFormatter().Write(stats, cliArgs.OutputPath!);
+                    break;
+                case "markdown":
+                    new MarkdownFormatter().Write(stats, cliArgs.OutputPath!);
+                    break;
+                case "adoc":
+                    new AdocFormatter().Write(stats, cliArgs.OutputPath!);
+                    break;
+                default:
+                    throw new ArgumentsCliException($"Неподдерживаемый формат: {cliArgs.Format}");
+            }
+            Console.WriteLine($"[OK] Анализ завершён, результат в файле: {cliArgs.OutputPath}");
             return 0;
         }
         catch(ArgumentsCliException aex)

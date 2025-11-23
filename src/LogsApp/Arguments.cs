@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace LogsApp;
 
-internal class Arguments
+public class Arguments
 {
     public List<string>? Paths { get; set; }
     public string? Format { get; set; } // json, markdown, adoc
@@ -21,31 +21,31 @@ internal class Arguments
             {
                 case "--path":
                 case "-p":
-                    if (i+1 >= args.Length)
-                        throw new ArgumentsCliException("После --path не указан путь к файлу");
+                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
+                        throw new ArgumentsCliException("После --path/-p не указан путь к файлу");
                     cli.Paths = args[++i].Split(';').ToList();
                     break;
                 case "--format":
                 case "-f":
-                    if (i+1 >= args.Length)
-                        throw new ArgumentsCliException("После --format не передан формат (json/markdown/adoc)");
+                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
+                        throw new ArgumentsCliException("После --format/-f не передан формат (json/markdown/adoc)");
                     cli.Format = args[++i].ToLower();
                     if (!(cli.Format == "json" || cli.Format == "markdown" || cli.Format == "adoc"))
                         throw new ArgumentsCliException($"Неподдерживаемый формат: {cli.Format}");
                     break;
                 case "--output":
                 case "-o":
-                    if (i+1 >= args.Length)
-                        throw new ArgumentsCliException("После --output не указан путь выходного файла");
+                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
+                        throw new ArgumentsCliException("После --output/-o не указан путь выходного файла");
                     cli.OutputPath = args[++i];
                     break;
                 case "--from":
-                    if (i+1 >= args.Length)
+                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
                         throw new ArgumentsCliException("После --from не указана дата");
                     cli.From = ParseIso8601Date(args[++i], "from");
                     break;
                 case "--to":
-                    if (i+1 >= args.Length)
+                    if (i+1 >= args.Length || args[i+1].StartsWith("-"))
                         throw new ArgumentsCliException("После --to не указана дата");
                     cli.To = ParseIso8601Date(args[++i], "to");
                     break;
@@ -54,11 +54,11 @@ internal class Arguments
             }
         }
         if (cli.Paths == null || cli.Paths.Count == 0)
-            throw new ArgumentsCliException("Не передан параметр --path, он обязателен");
+            throw new ArgumentsCliException("Не передан параметр --path/-p, он обязателен");
         if (string.IsNullOrWhiteSpace(cli.OutputPath))
-            throw new ArgumentsCliException("Не передан параметр --output, он обязателен");
+            throw new ArgumentsCliException("Не передан параметр --output/-o, он обязателен");
         if (string.IsNullOrWhiteSpace(cli.Format))
-            throw new ArgumentsCliException("Не передан параметр --format, он обязателен");
+            throw new ArgumentsCliException("Не передан параметр --format/-f, он обязателен");
         if (cli.From != null && cli.To != null && cli.From >= cli.To)
             throw new ArgumentsCliException("from >= to: дата начала больше или равна дате конца");
         return cli;
@@ -71,7 +71,7 @@ internal class Arguments
     }
 }
 
-internal class ArgumentsCliException : Exception
+public class ArgumentsCliException : Exception
 {
     public ArgumentsCliException(string msg): base(msg) {}
 }
