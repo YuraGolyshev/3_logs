@@ -69,7 +69,7 @@ public class StatisticsBuilder
             stats.RequestsPerDate = byDate;
         }
         // Уникальные протоколы
-        stats.UniqueProtocols = list.Select(l => l.Protocol).Where(p => !string.IsNullOrWhiteSpace(p)).Distinct().ToList();
+        stats.UniqueProtocols = list.Select(l => l.Protocol).Where(p => !string.IsNullOrWhiteSpace(p)).Distinct().OrderBy(p => p).ToList();
         return stats;
     }
 }

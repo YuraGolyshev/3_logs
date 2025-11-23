@@ -19,7 +19,7 @@ public class StatsCalculationTests
         };
         var stats = new StatisticsBuilder().Build(list, new List<string> { "123.log" });
         Assert.Equal(3, stats.TotalRequestsCount);
-        Assert.Equal(333, stats.ResponseSizeInBytes.Average);
+        Assert.Equal(333.33, stats.ResponseSizeInBytes.Average, 2); // Среднее от [100, 200, 700] = 333.33 (округлено до 2 знаков)
         Assert.Equal(700, stats.ResponseSizeInBytes.Max);
         Assert.Equal(700, stats.ResponseSizeInBytes.P95); // ceil(95%*3)=2.85=>2,indexed from 0=>2
         Assert.Equal(2, stats.Resources.Count);

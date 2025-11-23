@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace LogsApp;
 
@@ -11,7 +12,8 @@ public class LogFileProcessor
     /// </summary>
     public IEnumerable<LogEntry> ReadLogEntries(IEnumerable<string> files, DateTime? from, DateTime? to)
     {
-        foreach (var file in files)
+        var expandedFiles = ExpandFilePatterns(files);
+        foreach (var file in expandedFiles)
         {
             if (file.StartsWith("http://") || file.StartsWith("https://"))
             {
@@ -50,6 +52,72 @@ public class LogFileProcessor
                 yield return entry;
             }
             Console.Error.WriteLine($"[INFO] Завершено чтение файла {file}: {total} строк, валидных {valid}");
+        }
+    }
+
+    private IEnumerable<string> ExpandFilePatterns(IEnumerable<string> patterns)
+    {
+        foreach (var pattern in patterns)
+        {
+            if (pattern.Contains('*') || pattern.Contains('?'))
+            {
+                string directory;
+                string fileNamePattern;
+
+                if (pattern.Contains("**"))
+                {
+                    var lastStarIndex = pattern.LastIndexOf("**");
+                    var afterStars = pattern.Substring(lastStarIndex + 2);
+                    var pathBeforeStars = pattern.Substring(0, lastStarIndex);
+
+                    if (string.IsNullOrEmpty(pathBeforeStars))
+                    {
+                        directory = Directory.GetCurrentDirectory();
+                    }
+                    else
+                    {
+                        directory = Path.IsPathRooted(pathBeforeStars) ? pathBeforeStars : Path.GetFullPath(pathBeforeStars);
+                    }
+
+                    fileNamePattern = afterStars.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    if (string.IsNullOrEmpty(fileNamePattern))
+                    {
+                        fileNamePattern = "*";
+                    }
+                }
+                else
+                {
+                    directory = Path.GetDirectoryName(pattern);
+                    if (string.IsNullOrEmpty(directory))
+                    {
+                        directory = Directory.GetCurrentDirectory();
+                    }
+                    else if (!Path.IsPathRooted(directory))
+                    {
+                        directory = Path.GetFullPath(directory);
+                    }
+
+                    fileNamePattern = Path.GetFileName(pattern);
+                }
+
+                if (Directory.Exists(directory))
+                {
+                    var searchOption = pattern.Contains("**") ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                    var foundFiles = Directory.GetFiles(directory, fileNamePattern, searchOption);
+                    foreach (var file in foundFiles)
+                    {
+                        var ext = Path.GetExtension(file).ToLower();
+                        if (ext == ".log" || ext == ".txt")
+                        {
+                            yield return file;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                yield return pattern;
+            }
         }
     }
 }
