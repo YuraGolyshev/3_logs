@@ -39,7 +39,7 @@ public class StatisticsBuilder
             stats.ResponseSizeInBytes.Average = Math.Round(sizes.Average(), 2);
             stats.ResponseSizeInBytes.Max = sizes.Max();
             double p95Position = (sizes.Count - 1) * 0.95;
-            int p95Index = (int)Math.Round(p95Position);
+            int p95Index = (int)Math.Ceiling(p95Position);
             p95Index = Math.Clamp(p95Index, 0, sizes.Count - 1);
             stats.ResponseSizeInBytes.P95 = sizes[p95Index];
         }
