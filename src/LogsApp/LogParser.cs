@@ -5,7 +5,8 @@ namespace LogsApp;
 internal static class LogParser
 {
     private static readonly Regex pattern = new Regex(
-        "^(?<ip>\\S+) - (?<user>\\S+) \\[([^\]]+)\\] \"(?<method>\\S+) (?<resource>\\S+)(?: (?<protocol>\\S+))?\" (?<status>\\d{3}) (?<bytes>\\d+) \"([^\"]*)\" \"([^\"]*)\"$",
+        // Используем raw string и именованные группы для удобства разбора
+        @"^(?<ip>\S+) - (?<user>\S+) \[(?<datetime>[^\]]+)\] ""(?<method>\S+) (?<resource>\S+)(?: (?<protocol>\S+))?"" (?<status>\d{3}) (?<bytes>\d+) ""(?<referer>[^""]*)"" ""(?<agent>[^""]*)""$",
         RegexOptions.Compiled);
 
     public static LogEntry? ParseAndWarn(string line)
@@ -22,13 +23,13 @@ internal static class LogParser
             {
                 RemoteAddr = match.Groups["ip"].Value,
                 RemoteUser = match.Groups["user"].Value,
-                TimeLocal = ParseNginxDate(match.Groups[3].Value),
+                TimeLocal = ParseNginxDate(match.Groups["datetime"].Value),
                 Resource = match.Groups["resource"].Value,
                 Protocol = match.Groups["protocol"].Success ? match.Groups["protocol"].Value : "",
                 Status = int.Parse(match.Groups["status"].Value),
                 BodyBytesSent = int.Parse(match.Groups["bytes"].Value),
-                Referer = match.Groups[6].Value,
-                UserAgent = match.Groups[7].Value
+                Referer = match.Groups["referer"].Value,
+                UserAgent = match.Groups["agent"].Value
             };
             return log;
         }

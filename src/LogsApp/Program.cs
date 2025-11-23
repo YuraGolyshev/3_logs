@@ -18,7 +18,15 @@ class Program
             Console.WriteLine($"Выходной файл: {cliArgs.OutputPath}");
             if(cliArgs.From != null) Console.WriteLine($"Дата от: {cliArgs.From:O}");
             if(cliArgs.To != null) Console.WriteLine($"Дата до: {cliArgs.To:O}");
-            // ... Основная логика будет добавлена на следующих этапах ...
+            // Чтение и обработка логов (простая индексация для отладки)
+            var processor = new LogFileProcessor();
+            int count = 0;
+            foreach (var entry in processor.ReadLogEntries(cliArgs.Paths!, cliArgs.From, cliArgs.To))
+            {
+                Console.WriteLine($"LOG: {entry.TimeLocal:O} {entry.RemoteAddr} {entry.Resource} {entry.Status} {entry.BodyBytesSent}");
+                count++;
+            }
+            Console.WriteLine($"Итого валидных логов считано: {count}");
             return 0;
         }
         catch(ArgumentsCliException aex)
