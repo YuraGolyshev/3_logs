@@ -68,8 +68,8 @@ public class StatisticsBuilder
                 .ToList();
             stats.RequestsPerDate = byDate;
         }
-        // Уникальные протоколы
-        stats.UniqueProtocols = list.Select(l => l.Protocol).Where(p => !string.IsNullOrWhiteSpace(p)).Distinct().OrderBy(p => p).ToList();
+        // Уникальные протоколы (порядок первого появления)
+        stats.UniqueProtocols = list.Select(l => l.Protocol).Where(p => !string.IsNullOrWhiteSpace(p)).Distinct().ToList();
         return stats;
     }
 }

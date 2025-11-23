@@ -42,6 +42,18 @@ public static class LogParser
 
     private static DateTime ParseNginxDate(string s)
     {
-        return DateTime.ParseExact(s, "dd/MMM/yyyy:HH:mm:ss zzz", System.Globalization.CultureInfo.InvariantCulture);
+        var formats = new[]
+        {
+            "dd/MMM/yyyy:HH:mm:ss zzz",
+            "d/MMM/yyyy:HH:mm:ss zzz"
+        };
+        foreach (var format in formats)
+        {
+            if (DateTime.TryParseExact(s, format, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var result))
+            {
+                return result;
+            }
+        }
+        throw new FormatException($"Не удалось распарсить дату: {s}");
     }
 }
